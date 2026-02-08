@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# Build artifacts
+build/
+DerivedData/
+
+# Ralph OG runtime files (project-specific)
+.ralph-og/loop.log
+.ralph-og/loop.pid
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo

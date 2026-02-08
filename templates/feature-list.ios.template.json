@@ -1,0 +1,76 @@
+{
+  "objective": "{{OBJECTIVE}}",
+  "created_at": "{{TIMESTAMP}}",
+  "platform": "iOS",
+  "min_ios_version": "17.0",
+  "design_style": "{{DESIGN_STYLE}}",
+  "features": [
+    {
+      "id": 1,
+      "name": "App Entry Point",
+      "description": "Create main App struct with WindowGroup and initial ContentView",
+      "status": "failing",
+      "priority": 1,
+      "steps": [
+        "Create MyAppApp.swift with @main attribute",
+        "Define WindowGroup with ContentView",
+        "Set up app lifecycle if needed"
+      ],
+      "acceptance_criteria": [
+        "App launches without crash",
+        "ContentView displays correctly"
+      ],
+      "swiftui_patterns": [
+        "@main",
+        "WindowGroup",
+        "Scene"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Design System Setup",
+      "description": "Create design tokens and reusable style extensions",
+      "status": "failing",
+      "priority": 2,
+      "steps": [
+        "Create DesignTokens.swift with color, typography, spacing tokens",
+        "Create View extensions for common styles",
+        "Set up Asset catalog for colors"
+      ],
+      "acceptance_criteria": [
+        "Tokens compile without errors",
+        "Colors support light/dark mode",
+        "Typography follows iOS guidelines"
+      ],
+      "swiftui_patterns": [
+        "Color",
+        "Font",
+        "ViewModifier"
+      ]
+    }
+  ],
+  "guardrails": [
+    "It is unacceptable to remove or edit existing tests",
+    "Do not mark features as 'passing' until build succeeds",
+    "Always use design tokens, never hardcoded values",
+    "Follow MVVM architecture",
+    "Support Dynamic Type",
+    "Minimum touch target: 44pt",
+    "Commit changes after completing each feature",
+    "Update progress.txt before exiting each iteration",
+    "Work on ONE feature at a time"
+  ],
+  "architecture": {
+    "pattern": "MVVM",
+    "state_management": "@Observable",
+    "navigation": "NavigationStack",
+    "async": "Swift Concurrency (async/await)"
+  },
+  "notes": [
+    "Features should be atomic - completable in one iteration",
+    "Priority 1 = highest, work on lowest number first",
+    "Status values: 'failing', 'passing', 'blocked'",
+    "Build must succeed before marking feature complete",
+    "Use SwiftUI previews for visual verification"
+  ]
+}

@@ -1,46 +1,39 @@
 ---
 name: native-ios-app
-description: Build native iOS apps with SwiftUI using Xcode 26.3 MCP integration and Ralph OG autonomous development. Use when creating iOS apps, Swift development, Xcode projects, or autonomous mobile app development with visual design styles.
-version: 1.0.0
+description: "Create and develop native iOS applications with SwiftUI, configure Xcode MCP tools, scaffold project structures, apply visual design styles, run autonomous build-test-commit loops, and capture SwiftUI previews. Use when building an iPhone app, writing .swift files, setting up an Xcode project, designing app UI, running iOS simulators, or automating iOS development workflows."
 allowed-tools: Bash(xcrun *), Bash(xcodebuild *), Bash(npx xcodebuildmcp *), Bash(swift *), Read, Write, Edit, Glob, Grep
 ---
 
 # Native iOS App Development Skill
 
-Build native iOS applications using SwiftUI, Xcode 26.3 MCP integration, and Ralph OG autonomous development loops.
+Create and develop native iOS applications using SwiftUI and Xcode MCP integration, with optional autonomous development loops for hands-off feature implementation.
 
 ## Quick Reference
 
 | Command | Purpose |
 |---------|---------|
-| `/native-ios-app init "App Name"` | Initialize new iOS project |
-| `/native-ios-app ralph "objective"` | Start Ralph OG autonomous loop |
-| `/native-ios-app style glassmorphism` | Apply design style to project |
-| `/native-ios-app build` | Build project via MCP |
-| `/native-ios-app preview` | Capture SwiftUI previews |
-| `/native-ios-app status` | Check build/test status |
+| `/native-ios-app init "App Name"` | Scaffold new iOS project with SwiftUI template |
+| `/native-ios-app ralph "objective"` | Start autonomous build-test-commit loop |
+| `/native-ios-app style glassmorphism` | Apply design style and generate tokens |
+| `/native-ios-app build` | Build project via Xcode MCP |
+| `/native-ios-app preview` | Capture SwiftUI preview screenshots |
+| `/native-ios-app status` | Check build, test, and loop status |
 
 ---
 
 ## Prerequisites
 
-### 1. Xcode 26.3+ Setup
+### 1. Xcode MCP Bridge Setup
 
-Enable MCP bridge in Xcode:
 1. Xcode → Settings → Intelligence → Anthropic (configure API key)
 2. Xcode → Settings → Intelligence → Model Context Protocol → Enable "Xcode Tools"
 
-### 2. MCP Bridge for Claude Code
-
 ```bash
-# Add Xcode MCP bridge
 claude mcp add --transport stdio xcode -- xcrun mcpbridge
-
-# Verify
-claude mcp list
+claude mcp list  # verify bridge loaded
 ```
 
-### 3. XcodeBuildMCP (Enhanced Features)
+### 2. XcodeBuildMCP (Enhanced CLI Features)
 
 ```bash
 npm install -g xcodebuildmcp@beta
@@ -51,7 +44,7 @@ claude mcp add XcodeBuildMCP -- npx -y xcodebuildmcp@beta mcp
 
 ## Xcode MCP Tools Available
 
-Once configured, these tools are available:
+Once configured, these tools are available via MCP. See [references/xcode-mcp-tools.md](references/xcode-mcp-tools.md) for full parameters and usage examples.
 
 | Category | Tools |
 |----------|-------|
@@ -62,105 +55,85 @@ Once configured, these tools are available:
 | **Preview** | RenderPreview (SwiftUI → PNG images) |
 | **Execute** | ExecuteSnippet (Swift REPL) |
 | **Docs** | DocumentationSearch (Apple docs + WWDC transcripts) |
-| **Navigation** | XcodeListWindows |
+| **Navigation** | XcodeListWindows (call first to get `tabIdentifier`) |
 
 ---
 
-## Project Initialization
+## Project Initialization (`/native-ios-app init`)
 
-### Create New iOS App
+1. Create project directory and Xcode project structure
+2. Set up SwiftUI app template with `@main` entry point
+3. Configure build settings for target iOS version
+4. Initialize git repository
+5. Create `.design-system/` with default design tokens
+6. **Verify**: Run `xcodebuild build` — must succeed before proceeding
+7. **If build fails**: Check scheme with `xcodebuild -list`, verify signing in Xcode → Project → Signing & Capabilities
 
-```bash
-# Create project directory
-mkdir -p ~/Developer/MyApp
-cd ~/Developer/MyApp
-
-# Initialize Xcode project (via swift package or Xcode template)
-swift package init --type executable --name MyApp
-```
-
-### Project Structure
+### Standard Project Structure
 
 ```
 MyApp/
 ├── MyApp.xcodeproj/
 ├── MyApp/
-│   ├── MyAppApp.swift          # App entry point
+│   ├── MyAppApp.swift          # @main entry point
 │   ├── ContentView.swift       # Main view
 │   ├── Views/                  # SwiftUI views
-│   ├── Models/                 # Data models
-│   ├── ViewModels/             # MVVM view models
-│   ├── Services/               # API/data services
+│   ├── Models/                 # Data structures
+│   ├── ViewModels/             # @Observable classes
+│   ├── Services/               # API/persistence
 │   ├── Components/             # Reusable UI components
 │   └── Resources/              # Assets, colors, fonts
 ├── MyAppTests/
-├── .ralph-og/                  # Ralph OG autonomous loop
 └── .design-system/             # Design tokens and styles
 ```
 
 ---
 
-## Ralph OG Integration for iOS
+## Autonomous Development Loop (`/native-ios-app ralph`)
 
-### Initialize Ralph OG for iOS Development
+The Ralph OG loop autonomously picks features from a task list and implements them one at a time with full build verification, test runs, and commits.
+
+### Setup
 
 Creates `.ralph-og/` with iOS-specific configuration:
 
-```
-.ralph-og/
-├── PROMPT.md              # Xcode-aware loop prompt
-├── init.sh                # Swift/Xcode environment setup
-├── feature-list.json      # Atomic features with SwiftUI focus
-├── progress.txt           # Work log
-├── loop.sh                # The autonomous loop
-└── learnings.md           # iOS-specific learnings
-```
+| File | Purpose |
+|------|---------|
+| `PROMPT.md` | Loop prompt with startup ritual and rules — see [templates/PROMPT.ios.template.md](templates/PROMPT.ios.template.md) |
+| `feature-list.json` | Atomic features with acceptance criteria — see [templates/feature-list.ios.template.json](templates/feature-list.ios.template.json) |
+| `init.sh` | Environment verification — see [templates/init.ios.template.sh](templates/init.ios.template.sh) |
+| `loop.sh` | Autonomous loop runner — see [scripts/loop.ios.sh](scripts/loop.ios.sh) |
+| `progress.txt` | Work log tracking completed features |
 
-### iOS-Specific PROMPT.md
+### Loop Workflow (each iteration)
 
-The Ralph OG prompt for iOS includes:
-
-1. **Startup Ritual**:
-   - `pwd` - Confirm directory
-   - Read `.ralph-og/progress.txt`
-   - `git log --oneline -10`
-   - Read `.ralph-og/feature-list.json`
-   - `xcodebuild -list` - Verify schemes
-   - Check for Xcode open via MCP
-
-2. **Visual Verification**:
-   - Capture SwiftUI Previews after UI changes
-   - Compare with expected layouts
-
-3. **Build Verification**:
-   - `xcodebuild build` before marking complete
-   - Check for warnings/errors
-
-4. **Test Verification**:
-   - Run tests via `xcodebuild test`
+1. **Startup**: Read `progress.txt`, check `git log --oneline -10`, verify schemes with `xcodebuild -list`
+2. **Pick**: Select highest-priority incomplete feature from `feature-list.json`
+3. **Implement**: Build the feature using SwiftUI
+4. **Build**: Run `xcodebuild build` — must succeed before marking complete
+   - **If build fails** → Read error output → fix issues → rebuild. Do not proceed until green.
+5. **Test**: Run `xcodebuild test` if tests exist
+   - **If tests fail** → Fix failing tests → re-run. Never delete or modify existing tests.
+6. **Preview**: Capture SwiftUI previews via `RenderPreview` for visual verification
+7. **Commit**: `git commit` with descriptive message
+8. **Log**: Update `progress.txt` with completed feature
 
 ### Starting the Loop
 
 ```bash
-cd ~/Developer/MyApp
+# Foreground
 .ralph-og/loop.sh
-```
 
-Or in background:
-```bash
+# Background
 nohup .ralph-og/loop.sh > .ralph-og/loop.log 2>&1 &
 echo $! > .ralph-og/loop.pid
 ```
 
 ---
 
-## Design Styles
+## Design Styles (`/native-ios-app style`)
 
-Select a visual design language for your app. Each style includes SwiftUI implementation patterns.
-
-### Available Styles
-
-See [styles/README.md](styles/README.md) for complete catalog:
+Apply a visual design language to the project. See [styles/README.md](styles/README.md) for the complete catalog with SwiftUI implementation patterns.
 
 | Style | Best For |
 |-------|----------|
@@ -168,222 +141,70 @@ See [styles/README.md](styles/README.md) for complete catalog:
 | **Glassmorphism** | Overlays, cards, modals |
 | **Neumorphism** | Tactile buttons, soft interfaces |
 | **Flat Design** | Clean, minimal interfaces |
-| **Material Design** | Android-like, cross-platform |
 | **Brutalism** | Bold, high-contrast, statement apps |
 | **Neo-Brutalism** | Modern brutalist with color |
 | **Minimalism** | Content-focused, clean |
 | **Cyberpunk** | Dark mode, neon accents |
-| **Retro/Y2K** | Nostalgic, playful |
 | **Bento Box** | Grid layouts, organized content |
 
-### Applying a Style
+Running `/native-ios-app style <name>` generates:
+1. `.design-system/tokens.swift` — colors, typography, spacing, shadows, corner radii, animation curves
+2. `.design-system/extensions.swift` — SwiftUI view extensions for the chosen style
+3. Updates existing components if present
 
-```
-/native-ios-app style glassmorphism
-```
-
-This creates `.design-system/tokens.swift` with style-specific:
-- Color palette
-- Typography scale
-- Spacing system
-- Shadow definitions
-- Corner radius tokens
-- Animation curves
-
----
-
-## SwiftUI Materials & Effects
-
-### iOS 15+ Native Materials
+Always use design tokens instead of hardcoded values:
 
 ```swift
-// Available material types
-.ultraThinMaterial      // Most transparent
-.thinMaterial
-.regularMaterial
-.thickMaterial
-.ultraThickMaterial     // Most opaque
-
-// Usage
-Text("Hello")
-    .padding()
-    .background(.ultraThinMaterial)
-    .clipShape(RoundedRectangle(cornerRadius: 16))
-```
-
-### Liquid Glass (iOS 26+)
-
-```swift
-// New in iOS 26: Liquid Glass effect
-.background(.liquidGlass)
-.glassEffect(style: .standard)
-.glassEffect(style: .frosted, tint: .blue)
-```
-
-### Custom Blur Effects
-
-```swift
-struct GlassCard: View {
-    var body: some View {
-        ZStack {
-            // Background blur
-            Rectangle()
-                .fill(.ultraThinMaterial)
-
-            // Content
-            VStack {
-                Text("Glass Card")
-                    .font(.headline)
-            }
-            .padding()
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
-    }
-}
-```
-
----
-
-## Commands Reference
-
-### `/native-ios-app init "App Name"`
-
-Initialize a new iOS project:
-1. Create Xcode project structure
-2. Set up SwiftUI app template
-3. Configure build settings
-4. Initialize git repository
-5. Create `.design-system/` with default tokens
-6. Optionally initialize Ralph OG
-
-### `/native-ios-app ralph "objective"`
-
-Start Ralph OG autonomous development:
-1. Create `.ralph-og/` directory
-2. Generate iOS-specific PROMPT.md
-3. Create feature-list.json from objective
-4. Set up init.sh with Swift toolchain checks
-5. Start the loop
-
-### `/native-ios-app style <style-name>`
-
-Apply design style:
-1. Read style definition from `styles/<style-name>.md`
-2. Generate `.design-system/tokens.swift`
-3. Create style-specific SwiftUI extensions
-4. Update existing components if present
-
-### `/native-ios-app build`
-
-Build via Xcode MCP:
-1. Check for open Xcode project
-2. Run `BuildProject` via MCP
-3. Report build status and errors
-4. Capture any warnings
-
-### `/native-ios-app preview`
-
-Capture SwiftUI previews:
-1. List preview providers in project
-2. Render each via `RenderPreview` MCP tool
-3. Save PNG images to `.previews/`
-4. Report any preview failures
-
-### `/native-ios-app status`
-
-Check project status:
-1. Build state (last build time, success/failure)
-2. Test results (passed/failed/skipped)
-3. Code issues from navigator
-4. Ralph OG progress (if active)
-
----
-
-## Best Practices
-
-### SwiftUI Architecture
-
-Use MVVM pattern:
-```
-Views/           → SwiftUI views (display only)
-ViewModels/      → @Observable classes (logic)
-Models/          → Data structures
-Services/        → API, persistence
-```
-
-### Design Token Usage
-
-Always use tokens, never hardcoded values:
-```swift
-// Good
+// Correct — uses tokens
 Text("Title")
     .font(.system(size: DesignTokens.Typography.title))
     .foregroundColor(DesignTokens.Colors.textPrimary)
 
-// Bad
+// Incorrect — hardcoded values
 Text("Title")
     .font(.system(size: 28))
     .foregroundColor(Color(hex: "#1a1a1a"))
 ```
 
-### Accessibility
+---
 
-- Minimum touch target: 44×44pt
-- Support Dynamic Type
-- Provide accessibility labels
-- Respect `reduceMotion` preference
+## Build and Preview Commands
 
-```swift
-@Environment(\.accessibilityReduceMotion) var reduceMotion
+### `/native-ios-app build`
 
-.animation(reduceMotion ? nil : .spring(), value: isExpanded)
-```
+1. Discover open project via `XcodeListWindows` to get `tabIdentifier`
+2. Run `BuildProject` via MCP with target scheme
+3. **If build succeeds** → Report status and any warnings
+4. **If build fails** → Run `GetBuildLog` → identify errors → suggest fixes
+5. **If MCP unavailable** → Fall back to `xcodebuild build -scheme <scheme>`
+
+### `/native-ios-app preview`
+
+1. Find preview providers with `XcodeGlob` for `*_Previews` types
+2. Render each via `RenderPreview` → save PNG to `.previews/`
+3. **If preview fails** → Check compile errors with `XcodeListNavigatorIssues` first, then verify simulator is selected
+
+### `/native-ios-app status`
+
+Reports build state (last result, warnings), test results (passed/failed/skipped), navigator issues, and Ralph OG loop progress if active.
 
 ---
 
 ## Troubleshooting
 
-### MCP Bridge Not Working
-
-1. Verify Xcode 26.3+ installed: `xcodebuild -version`
-2. Check MCP enabled in Xcode Settings
-3. Ensure Xcode is running with project open
-4. Test with: `xcrun mcpbridge --help`
-
-### Build Failures
-
-1. Check scheme: `xcodebuild -list`
-2. Clean build folder: `xcodebuild clean`
-3. Check signing: Xcode → Project → Signing & Capabilities
-
-### Preview Not Rendering
-
-1. Ensure preview provider exists
-2. Check for compile errors
-3. Verify simulator selected in Xcode
+| Problem | Solution |
+|---------|----------|
+| MCP bridge not working | Verify Xcode 26.3+ with `xcodebuild -version`. Check MCP enabled in Xcode Settings. Ensure project is open. Test: `xcrun mcpbridge --help` |
+| Build failures | Check scheme: `xcodebuild -list`. Clean: `xcodebuild clean`. Verify signing: Xcode → Project → Signing & Capabilities |
+| Preview not rendering | Confirm preview provider exists. Check compile errors first. Verify simulator selected in Xcode |
 
 ---
 
 ## Resources
 
-### Apple Documentation
-- [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/)
+- [references/xcode-mcp-tools.md](references/xcode-mcp-tools.md) — Complete MCP tool reference with parameters and examples
+- [styles/README.md](styles/README.md) — Design style catalog with SwiftUI implementation patterns
+- [templates/](templates/) — Ralph OG iOS templates (prompt, feature list, init script)
+- [scripts/loop.ios.sh](scripts/loop.ios.sh) — Autonomous loop runner script
+- [Apple Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/)
 - [SwiftUI Documentation](https://developer.apple.com/documentation/swiftui/)
-- [Xcode 26.3 Release Notes](https://developer.apple.com/documentation/xcode-release-notes/)
-
-### References in This Skill
-- [references/xcode-mcp-tools.md](references/xcode-mcp-tools.md) - Complete MCP tool reference
-- [references/swiftui-patterns.md](references/swiftui-patterns.md) - Common SwiftUI patterns
-- [references/ralph-ios.md](references/ralph-ios.md) - Ralph OG iOS configuration
-- [styles/README.md](styles/README.md) - Design style catalog
-
-### Templates
-- [templates/PROMPT.ios.template.md](templates/PROMPT.ios.template.md) - iOS Ralph prompt
-- [templates/feature-list.ios.template.json](templates/feature-list.ios.template.json) - iOS features template
-- [templates/init.ios.template.sh](templates/init.ios.template.sh) - iOS environment setup
-
----
-
-*Skill Version: 1.0.0*
-*Compatible with: Xcode 26.3+, iOS 17+, Swift 5.9+*
